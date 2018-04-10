@@ -1,0 +1,26 @@
+{
+  "name": "amo-contracts",
+  "version": "0.0.1",
+  "description": "Smart Contracts for AMO Coin & AMO Coin Sale",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "truffle":"^4.0.4",
+    "zeppelin-solidity": "^1.7.0",
+    "web3": "^1.0.0-beta.26"
+  },
+  "devDependencies": {
+    "solidity-coverage": "^0.4.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AMO-Project/AMO-Contracts.git"
+  }
+}
