@@ -169,38 +169,68 @@ contract AMOCoinSale is Pausable {
         roundInfos[roundIndex].rate = BASE_AMO_TO_ETH_RATE;
     }
 
+    /*
+     * Fallback function to buy AMO tokens
+     */
     function () public payable {
         buy();
     }
 
     /*
-     * 
+     * Withdraw ethers to fund address
      */
-    function ownerWithdraw() external onlyOwner {
+    function withdraw() external onlyOwner {
         fundAddr.transfer(this.balance);
     }
 
-
+    /*
+     * Add users to whitelist
+     * Whitelisted users are accumulated on each round
+     *
+     * @param users: Addresses of users who passed KYC
+     */
     function addWhitelists(address[] users) public onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
             addWhitelist(users[i]);
         }
     }
 
+    /*
+     * Add one user to whitelist
+     *
+     * @param user: Address of user who passed KYC
+     */
     function addWhitelist(address user) public onlyOwner {
         whitelists[user] = true;
     }
 
+    /*
+     * Remove users from whitelist
+     *
+     * @param users: Addresses of users who should not belong to whitelist
+     */
     function removeWhitelists(address[] users) public onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
             removeWhitelist(users[i]);
         }
     }
 
+    /*
+     * Remove users from whitelist
+     *
+     * @param users: Addresses of users who should not belong to whitelist
+     */
     function removeWhitelist(address user) public onlyOwner {
         whitelists[user] = false;
     }
 
+    /*
+     * Set minimum contribution for round
+     * User have to send more ether than minimum contribution
+     *
+     * @param _round: Round to set
+     * @param _minContribution: Minimum contribution in wei
+     */
     function setMinContributionForRound(
         SaleRounds _round,
         uint256 _minContribution
@@ -214,6 +244,13 @@ contract AMOCoinSale is Pausable {
             (_minContribution == 0) ? BASE_MIN_CONTRIBUTION : _minContribution;
     }
 
+    /*
+     * Set max contribution for round
+     * User can't send more ether than the max contributions in round
+     *
+     * @param _round: Round to set
+     * @param _maxContribution: Max contribution in wei
+     */
     function setMaxContributionForRound(
         SaleRounds _round,
         uint256 _maxContribution
@@ -227,6 +264,13 @@ contract AMOCoinSale is Pausable {
             (_maxContribution == 0) ? UINT256_MAX : _maxContribution;
     }
 
+    /*
+     * Set hard cap for round
+     * Total wei raised in round should be smaller than hard cap
+     *
+     * @param _round: Round to set
+     * @param _hardCap: Hard cap in wei
+     */
     function setHardCapForRound(
         SaleRounds _round,
         uint256 _hardCap
@@ -240,6 +284,12 @@ contract AMOCoinSale is Pausable {
             (_hardCap == 0) ? BASE_HARD_CAP_PER_ROUND : _hardCap;
     }
 
+    /*
+     * Set AMO to Ether rate for round
+     *
+     * @param _round: Round to set
+     * @param _rate: AMO to Ether _rate
+     */
     function setRateForRound(
         SaleRounds _round,
         uint256 _rate
@@ -253,6 +303,10 @@ contract AMOCoinSale is Pausable {
             (_rate == 0) ? BASE_AMO_TO_ETH_RATE : _rate;
     }
 
+    /*
+     * Set up several information for next round
+     * Only owner can call this method
+     */
     function setUpSale(
         SaleRounds _round,
         uint256 _minContribution,
@@ -303,8 +357,6 @@ contract AMOCoinSale is Pausable {
     {
         address purchaser = msg.sender;
         uint256 contributionInWei = msg.value;
-
-        // Calculate token amount to be distributed
         uint256 tokenAmount = contributionInWei.mul(roundInfos[uint8(round)].rate);
 
         if (!token.transferFrom(token.owner(), purchaser, tokenAmount)) {
