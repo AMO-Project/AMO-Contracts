@@ -314,7 +314,7 @@ contract AMOCoinSale is Pausable {
         uint256 _hardCap,
         uint256 _rate
     )
-        public
+        external
         onlyOwner
         atStage(Stages.Ended)
     {
@@ -327,8 +327,11 @@ contract AMOCoinSale is Pausable {
         setRateForRound(_round, _rate);
     }
 
+    /*
+     * Start sale in current round
+     */
     function startSale(uint256 durationInSeconds)
-        public
+        external
         onlyOwner
         atStage(Stages.SetUp)
     {
@@ -340,7 +343,10 @@ contract AMOCoinSale is Pausable {
         SaleStarted(startTime, endTime, round);
     }
 
-    function endSale() public onlyOwner atStage(Stages.Started) {
+    /*
+     * End sale in crrent round
+     */
+    function endSale() external onlyOwner atStage(Stages.Started) {
         endTime = now;
         stage = Stages.Ended;
 
