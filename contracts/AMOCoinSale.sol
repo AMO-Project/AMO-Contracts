@@ -195,7 +195,7 @@ contract AMOCoinSale is Pausable {
      *
      * @param users: Addresses of users who passed KYC
      */
-    function addManyToWhitelist(address[] users) public onlyOwner {
+    function addManyToWhitelist(address[] users) external onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
             addToWhitelist(users[i]);
         }
@@ -215,7 +215,7 @@ contract AMOCoinSale is Pausable {
      *
      * @param users: Addresses of users who should not belong to whitelist
      */
-    function removeManyFromWhitelist(address[] users) public onlyOwner {
+    function removeManyFromWhitelist(address[] users) external onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
             removeFromWhitelist(users[i]);
         }
