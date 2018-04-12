@@ -275,22 +275,36 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
     assert.equal(rate * contribution, tokenAmount);
   });
 
-  it("", async () => {
+  it("only user enrolled to allocation lists can be allocated token",
+    async () => {
+    await sale.addToAllocationList(accounts[3], 100, { from: owner });
 
+    try {
+      await sale.allocateTokens(account[4], 100, { from: owner });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
   });
-});
-/*
-  it("users enrolled to allocation lists can be allocated token ", async () => {
-    await sale.addAllocationList(accounts[3], 100, { from: owner });
-    await sale.addAllocationList(accounts[4], 200, { from: owner });
 
-    await sale.allocateTokensBeforeSale(
-      accounts[3], 100, { from: owner }
-    );
+  it("user could not be allocated token more than allowed amount", async () => {
+    await sale.addToAllocationList(accounts[3], 100, { from: owner });
 
-    await sale.allocateTokensBeforeSale(
-      accounts[4], 200, { from: owner }
-    );
+    try {
+      await sale.allocateTokens(account[3], 200, { from: owner });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+  });
+
+  it("users should be allocated correct amoun of token ", async () => {
+    await sale.addToAllocationList(accounts[3], 100, { from: owner });
+    await sale.addToAllocationList(accounts[4], 200, { from: owner });
+
+    await sale.allocateTokens(accounts[3], 100, { from: owner });
+
+    await sale.allocateTokens(accounts[4], 200, { from: owner });
 
     await token.enableTransfer({ from: owner });
 
@@ -300,4 +314,4 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
     assert.equal(100, balanceOf3);
     assert.equal(200, balanceOf4);
   });
-*/
+});
