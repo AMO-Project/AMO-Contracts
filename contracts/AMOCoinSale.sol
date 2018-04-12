@@ -59,8 +59,14 @@ contract AMOCoinSale is Pausable {
 
     // SaleRounds(key) : RoundInfo(value) map
     // Since solidity does not support enum as key of map, converted enum to uint8
-    mapping(uint8 => RoundInfo) roundInfos;
+    mapping(uint8 => RoundInfo) public roundInfos;
 
+    struct AllocationInfo {
+        bool isAllowed;
+        uint256 allowedAmount;
+    }
+
+    mapping(address => AllocationInfo) private allocationList;
     /*
      * Event for sale start logging
      *
@@ -387,5 +393,72 @@ contract AMOCoinSale is Pausable {
         return stage == Stages.Ended;
     }
 
+    function addToAllocationList(address user, uint256 amount)
+        public
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+    {
+        allocationList[user].isAllowed = true;
+        allocationList[user].allowedAmount = amount;
+    }
 
+    function addManyToAllocationList(address[] users, uint256[] amounts)
+        external
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+    {
+        require(users.length == amounts.length);
+
+        for (uint32 i = 0; i < users.length; i++) {
+            addToAllocationList(users[i], amounts[i]);
+        }
+    }
+
+    function removeFromAllocationList(address user)
+        public
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+    {
+        allocationList[user].isAllowed = false;
+    }
+
+    function removeManyFromAllocationList(address[] users)
+        external
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+    {
+        for (uint32 i = 0; i < users.length; i++) {
+            removeFromAllocationList(users[i]);
+        }
+    }
+
+
+    function allocateTokens(address to, uint256 tokenAmount)
+        public
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+        returns (bool)
+    {
+        require(allocationList[to].isAllowed
+            && tokenAmount <= allocationList[to].allowedAmount);
+
+        if (!token.transferFrom(token.owner(), to, tokenAmount)) {
+            revert();
+        }
+        return true;
+    }
+
+    function allocateTokensToMany(address[] toList, uint256[] tokenAmountList)
+        external
+        onlyOwner
+        atRound(SaleRounds.EarlyInvestment)
+        returns (bool)
+    {
+        require(toList.length == tokenAmountList.length);
+
+        for (uint32 i = 0; i < toList.length; i++) {
+            allocateTokens(toList[i], tokenAmountList[i]);
+        }
+        return true;
+    }
 }
