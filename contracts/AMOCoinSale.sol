@@ -66,7 +66,9 @@ contract AMOCoinSale is Pausable {
         uint256 allowedAmount;
     }
 
+    // List of users who will be allocated tokens and their allowed amount
     mapping(address => AllocationInfo) private allocationList;
+
     /*
      * Event for sale start logging
      *
@@ -404,6 +406,12 @@ contract AMOCoinSale is Pausable {
         allocationList[user].allowedAmount = amount;
     }
 
+    /*
+     * Add users and their allowed amount to allocation list
+     *
+     * @param users: List of Address to be allocated tokens
+     * @param amount: List of allowed allocation amount of each user
+     */
     function addManyToAllocationList(address[] users, uint256[] amounts)
         external
         onlyOwner
@@ -416,6 +424,11 @@ contract AMOCoinSale is Pausable {
         }
     }
 
+    /*
+     * Remove user from allocation list
+     *
+     * @param user: Address of user to be removed
+     */
     function removeFromAllocationList(address user)
         public
         onlyOwner
@@ -424,6 +437,11 @@ contract AMOCoinSale is Pausable {
         allocationList[user].isAllowed = false;
     }
 
+    /*
+     * Remove users from allocation list
+     *
+     * @param user: Address list of users to be removed
+     */
     function removeManyFromAllocationList(address[] users)
         external
         onlyOwner
@@ -435,6 +453,13 @@ contract AMOCoinSale is Pausable {
     }
 
 
+    /*
+     * Allocate  tokens to user
+     * Only avaliable on early investment
+     *
+     * @param to: Address of user to be allocated tokens
+     * @param tokenAmount: Amount of tokens to be allocated
+     */
     function allocateTokens(address to, uint256 tokenAmount)
         public
         onlyOwner
@@ -450,6 +475,13 @@ contract AMOCoinSale is Pausable {
         return true;
     }
 
+    /*
+     * Allocate  tokens to user
+     * Only avaliable on early investment
+     *
+     * @param toList: List of addresses to be allocated tokens
+     * @param tokenAmountList: List of token amount to be allocated to each address
+     */
     function allocateTokensToMany(address[] toList, uint256[] tokenAmountList)
         external
         onlyOwner
