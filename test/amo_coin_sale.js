@@ -177,49 +177,47 @@ contract("AMO Coin Sale Whielist Test", async (accounts) => {
 
   it("only owner can add whitelist", async() => {
     try {
-      await sale.addWhitelist(user1, { from: admin });
+      await sale.addToWhitelist(user1, { from: admin });
       assert(false);
     } catch(err) {
       assert(err);
     }
 
     try {
-      await sale.addWhitelist(user1, { from: user1 });
+      await sale.addToWhitelist(user1, { from: user1 });
       assert(false);
     } catch(err) {
       assert(err);
     }
 
-    await sale.addWhitelist(user1, { from: owner });
+    await sale.addToWhitelist(user1, { from: owner });
   });
 
-  it("adding whitelist should work fine", async () => {
+  it("adding users to whitelist should work fine", async () => {
     let isAllowed = null;
 
-    await sale.addWhitelist(user1, { from: owner });
-    isAllowed = await sale.whitelists(user1);
-    isAllowed = await sale.whitelists(user1);
+    await sale.addToWhitelist(user1, { from: owner });
+    isAllowed = await sale.whitelist(user1);
 
     assert.equal(isAllowed, true);
 
     const users = [user1, user2, user3];
-    await sale.addWhitelists(users, { from: owner });
+    await sale.addManyToWhitelist(users, { from: owner });
 
-    isAllowed = await sale.whitelists(user1);
+    isAllowed = await sale.whitelist(user1);
     assert.equal(isAllowed, true);
 
-    isAllowed = await sale.whitelists(user2);
+    isAllowed = await sale.whitelist(user2);
     assert.equal(isAllowed, true);
 
-    isAllowed = await sale.whitelists(user3);
+    isAllowed = await sale.whitelist(user3);
     assert.equal(isAllowed, true);
-
   });
 
   it("only whitelisted user can buy tokens", async () => {
     let isAllowed = null;
 
-    await sale.addWhitelist(user1, { from: owner });
+    await sale.addToWhitelist(user1, { from: owner });
     await sale.setUpSale(0, 0, 0, 0, 0, { from: owner });
 
     await sale.startSale(20000);
@@ -260,7 +258,7 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
     let rate = null;
     let contribution = null;
 
-    await sale.addWhitelists([user1, user2], { from: owner });
+    await sale.addManyToWhitelist([user1, user2], { from: owner });
 
     rate = 2000;
     await sale.setUpSale(0, 0, 0, 0, rate, { from: owner });

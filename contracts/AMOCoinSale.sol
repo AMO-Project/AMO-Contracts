@@ -26,7 +26,7 @@ contract AMOCoinSale is Pausable {
     // Base minimum contribution
     uint256 public constant BASE_MIN_CONTRIBUTION = 0.1 * 1 ether;
     // Whitelisted addresses
-    mapping(address => bool) public whitelists;
+    mapping(address => bool) public whitelist;
     // Whitelisted users' contributions per round
     mapping(address => mapping(uint8 => uint256)) public contPerRound;
 
@@ -113,7 +113,7 @@ contract AMOCoinSale is Pausable {
      *
      * 1. Current round must be smaller than CrowdSale
      * 2. Current time must be within sale period
-     * 3. Purchaser must be enrolled to whitelists
+     * 3. Purchaser must be enrolled to whitelist
      * 4. Purchaser address must be correct
      * 5. Contribution must be bigger than minimum contribution for current round
      * 6. Sum of contributions must be smaller than max contribution for current round
@@ -126,7 +126,7 @@ contract AMOCoinSale is Pausable {
         uint256 contributionInWei = msg.value;
         address purchaser = msg.sender;
 
-        require(whitelists[purchaser]);
+        require(whitelist[purchaser]);
         require(purchaser != address(0));
         require(contributionInWei >= roundInfos[uint8(round)].minContribution);
         require(
@@ -189,9 +189,9 @@ contract AMOCoinSale is Pausable {
      *
      * @param users: Addresses of users who passed KYC
      */
-    function addWhitelists(address[] users) public onlyOwner {
+    function addManyToWhitelist(address[] users) public onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
-            addWhitelist(users[i]);
+            addToWhitelist(users[i]);
         }
     }
 
@@ -200,8 +200,8 @@ contract AMOCoinSale is Pausable {
      *
      * @param user: Address of user who passed KYC
      */
-    function addWhitelist(address user) public onlyOwner {
-        whitelists[user] = true;
+    function addToWhitelist(address user) public onlyOwner {
+        whitelist[user] = true;
     }
 
     /*
@@ -209,9 +209,9 @@ contract AMOCoinSale is Pausable {
      *
      * @param users: Addresses of users who should not belong to whitelist
      */
-    function removeWhitelists(address[] users) public onlyOwner {
+    function removeManyFromWhitelist(address[] users) public onlyOwner {
         for (uint32 i = 0; i < users.length; i++) {
-            removeWhitelist(users[i]);
+            removeFromWhitelist(users[i]);
         }
     }
 
@@ -220,8 +220,8 @@ contract AMOCoinSale is Pausable {
      *
      * @param users: Addresses of users who should not belong to whitelist
      */
-    function removeWhitelist(address user) public onlyOwner {
-        whitelists[user] = false;
+    function removeFromWhitelist(address user) public onlyOwner {
+        whitelist[user] = false;
     }
 
     /*
