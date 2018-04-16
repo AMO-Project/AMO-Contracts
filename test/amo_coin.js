@@ -183,7 +183,7 @@ contract("AMO Coin Lock/Unlock Test", (accounts) => {
     await token.unlockAccount(user1, { from: owner });
   });
 
-  it("locked accounts can transfer toekns only less than allowed amount",
+  it("locked accounts can transfer tokens only less than allowed amount",
     async () => {
     await token.transferFrom(owner, user1, 100, {from: admin});
     await token.transferFrom(owner, user2, 200, {from: admin});

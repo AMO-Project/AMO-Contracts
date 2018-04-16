@@ -316,7 +316,7 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
 
   it("only user enrolled to allocation lists can be allocated token",
     async () => {
-    await sale.addToAllocationList(accounts[3], 100, { from: owner });
+    await sale.addToAllocationList(user1, 100, { from: owner });
 
     try {
       await sale.allocateTokens(account[4], 100, { from: owner });
@@ -327,7 +327,7 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
   });
 
   it("user could not be allocated token more than allowed amount", async () => {
-    await sale.addToAllocationList(accounts[3], 100, { from: owner });
+    await sale.addToAllocationList(user1, 100, { from: owner });
 
     try {
       await sale.allocateTokens(account[3], 200, { from: owner });
@@ -338,19 +338,58 @@ contract("AMO Coin Sale Main Test", async (accounts) => {
   });
 
   it("users should be allocated correct amoun of token ", async () => {
-    await sale.addToAllocationList(accounts[3], 100, { from: owner });
-    await sale.addToAllocationList(accounts[4], 200, { from: owner });
+    await sale.addToAllocationList(user1, 100, { from: owner });
+    await sale.addToAllocationList(user2, 200, { from: owner });
 
-    await sale.allocateTokens(accounts[3], 100, { from: owner });
+    await sale.allocateTokens(user1, 100, { from: owner });
+    await sale.allocateTokens(user2, 200, { from: owner });
 
-    await sale.allocateTokens(accounts[4], 200, { from: owner });
-
-    await token.enableTransfer({ from: owner });
-
-    const balanceOf3 = await token.balanceOf(accounts[3]);
-    const balanceOf4 = await token.balanceOf(accounts[4]);
+    let balanceOf3 = await token.balanceOf(user1);
+    let balanceOf4 = await token.balanceOf(user2);
 
     assert.equal(100, balanceOf3);
     assert.equal(200, balanceOf4);
+
+    await sale.addManyToAllocationList(
+      [user1, user2], [100, 200], { from: owner }
+    );
+
+    await sale.allocateTokensToMany(
+      [user1, user2], [100, 200], { from: owner }
+    );
+
+    balanceOf3 = await token.balanceOf(user1);
+    balanceOf4 = await token.balanceOf(user2);
+
+    assert.equal(200, balanceOf3);
+    assert.equal(400, balanceOf4);
   });
+
+  it("users removed from allocation list cannot be allocated tokens",
+    async () => {
+      await sale.addToAllocationList(user1, 100, { from: owner });
+      await sale.removeFromAllocationList(user1, { from: owner });
+
+      try {
+        await sale.allocateTokens(user1, 100, { from: owner });
+        assert(false);
+      } catch(err) {
+        assert(err);
+      }
+
+      await sale.addManyToAllocationList(
+        [user1, user2], [100, 200], { from: owner }
+      );
+
+      await sale.removeManyFromAllocationList([user1, user2], { from: owner });
+
+      try {
+        await sale.allocateTokensToMany(
+          [user1, user2], [100, 200], { from: owner }
+        );
+        assert(false);
+      } catch(err) {
+        assert(err);
+      }
+    });
 });
