@@ -190,8 +190,47 @@ contract("AMO Coin Sale Whielist Test", async (accounts) => {
       assert(err);
     }
 
+    try {
+      await sale.addManyToWhitelist([user1, user2], { from: admin });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+
+    try {
+      await sale.addManyToWhitelist([user1, user2], { from: user1 });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+
+
     await sale.addToWhitelist(user1, { from: owner });
+    await sale.addManyToWhitelist([user1, user2], { from: owner });
   });
+
+  it("only owner can remove whitelist", async() => {
+    await sale.addManyToWhitelist([user1, user2, user3], { from: owner });
+
+    try {
+      await sale.removeFromWhitelist(user1, { from: user1 });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+
+    await sale.removeFromWhitelist(user1, { from: owner });
+
+    try {
+      await sale.removeManyFromWhitelist([user2, user3], { from: user1 });
+      assert(false);
+    } catch(err) {
+      assert(err);
+    }
+
+    await sale.removeManyFromWhitelist([user2, user3], { from: owner });
+  });
+
 
   it("adding users to whitelist should work fine", async () => {
     let isAllowed = null;
