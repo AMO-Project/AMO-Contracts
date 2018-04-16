@@ -3,6 +3,8 @@ pragma solidity ^0.4.18;
 import 'zeppelin-solidity/contracts/token/ERC20/StandardToken.sol';
 import 'zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol';
 import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+
 
 contract AMOCoin is StandardToken, BurnableToken, Ownable {
     string public constant symbol = "AMO";
@@ -20,6 +22,9 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
 
     // Enable transfer after token sale is completed
     bool public transferEnabled = false;
+
+    // Accounts to be locked for certain period
+    mapping(address => uint256) private lockedAccounts;
 
     /*
      *
@@ -66,8 +71,12 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
         _;
     }
 
+    modifier onlyAllowedAmount(address from, uint256 amount) {
+        require(balances[from].sub(amount) >= lockedAccounts[from]);
+        _;
+    }
     /*
-     * The constructor of AMOToken contract
+     * The constructor of AMOCoin contract
      *
      * @param _adminAddr: Address of token administrator
      */
@@ -126,6 +135,7 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
         public
         onlyWhenTransferAllowed
         onlyValidDestination(to)
+        onlyAllowedAmount(msg.sender, value)
         returns (bool)
     {
         return super.transfer(to, value);
@@ -136,7 +146,7 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
      *
      * @param from: Origin address
      * @param to: Destination address
-     * @param value: Amount of AMO token to transfer
+     * @param value: Amount of AMO Coin to transfer
      */
     function transferFrom(address from, address to, uint256 value)
         public
@@ -150,10 +160,39 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
     /*
      * Burn token, only owner is allowed
      *
-     * @param value: Amount of AMO token to burn
+     * @param value: Amount of AMO Coin to burn
      */
     function burn(uint256 value) public onlyOwner {
         require(transferEnabled);
         super.burn(value);
+    }
+
+    /*
+     * Disable transfering tokens more than allowed amount from certain account
+     *
+     * @param addr: Account to set allowed amount
+     * @param amount: Amount of tokens to allow
+     */
+    function lockAccount(address addr, uint256 amount)
+        external
+        onlyOwner
+        onlyValidDestination(addr)
+    {
+        require(amount > 0);
+        lockedAccounts[addr] = amount;
+    }
+
+    /*
+     * Enable transfering tokens of locked account
+     *
+     * @param addr: Account to unlock
+     */
+
+    function unlockAccount(address addr)
+        external
+        onlyOwner
+        onlyValidDestination(addr)
+    {
+        lockedAccounts[addr] = 0;
     }
 }
