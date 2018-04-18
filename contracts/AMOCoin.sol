@@ -7,6 +7,8 @@ import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 
 contract AMOCoin is StandardToken, BurnableToken, Ownable {
+    using SafeMath for uint256;
+
     string public constant symbol = "AMO";
     string public constant name = "AMO Coin";
     uint8 public constant decimals = 18;
