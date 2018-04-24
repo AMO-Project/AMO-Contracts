@@ -18,11 +18,11 @@ contract AMOCoinSale is Pausable {
     // Amount of raised in Wei (1 ether)
     uint256 public totalWeiRaised;
     // Base hard cap for each round in ether
-    uint256 public constant BASE_HARD_CAP_PER_ROUND = 20000 * 1 ether;
+    uint256 public constant BASE_HARD_CAP_PER_ROUND = 15000 * 1 ether;
 
     uint256 public constant UINT256_MAX = ~uint256(0);
     // Base AMO to Ether rate
-    uint256 public constant BASE_AMO_TO_ETH_RATE = 100000;
+    uint256 public constant BASE_AMO_TO_ETH_RATE = 160000;
     // Base minimum contribution
     uint256 public constant BASE_MIN_CONTRIBUTION = 0.1 * 1 ether;
     // Whitelisted addresses
