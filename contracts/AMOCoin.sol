@@ -12,8 +12,8 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
     string public constant symbol = "AMO";
     string public constant name = "AMO Coin";
     uint8 public constant decimals = 18;
-    uint256 public constant INITIAL_SUPPLY = 10000000000 * (10 ** uint256(decimals));
-    uint256 public constant TOKEN_SALE_ALLOWANCE = 6000000000 * (10 ** uint256(decimals));
+    uint256 public constant INITIAL_SUPPLY = 20000000000 * (10 ** uint256(decimals));
+    uint256 public constant TOKEN_SALE_ALLOWANCE = 10000000000 * (10 ** uint256(decimals));
     uint256 public constant ADMIN_ALLOWANCE = INITIAL_SUPPLY - TOKEN_SALE_ALLOWANCE;
 
     // Address of token administrator
@@ -24,7 +24,7 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
 
     // Enable transfer after token sale is completed
     bool public transferEnabled = false;
-
+ 
     // Accounts to be locked for certain period
     mapping(address => uint256) private lockedAccounts;
 
