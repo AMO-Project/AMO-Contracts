@@ -24,7 +24,7 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
 
     // Enable transfer after token sale is completed
     bool public transferEnabled = false;
- 
+
     // Accounts to be locked for certain period
     mapping(address => uint256) private lockedAccounts;
 
@@ -154,6 +154,7 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
         public
         onlyWhenTransferAllowed
         onlyValidDestination(to)
+        onlyAllowedAmount(from, value)
         returns (bool)
     {
         return super.transferFrom(from, to, value);
