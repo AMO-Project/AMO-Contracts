@@ -32,13 +32,13 @@ contract AMOCoin is StandardToken, BurnableToken, Ownable {
      *
      * Permissions when transferEnabled is false :
      *              ContractOwner    Admin    SaleContract    Others
-     * transfer            x           x           x            x
-     * transferFrom        x           v           v            x
+     * transfer            x           v            v           x
+     * transferFrom        x           v            v           x
      *
      * Permissions when transferEnabled is true :
      *              ContractOwner    Admin    SaleContract    Others
-     * transfer            v           x            x           v
-     * transferFrom        v           x            x           v
+     * transfer            v           v            v           v
+     * transferFrom        v           v            v           v
      *
      */
 
