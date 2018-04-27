@@ -1,5 +1,6 @@
 # AMO-Contracts
 Contracts for AMO Coin and AMO Coin Sale
+For more information about AMO Coin, enter https://amo.foundation
 
 ## Installation
 <code>npm install</code>
